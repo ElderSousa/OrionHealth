@@ -1,0 +1,76 @@
+services:
+  # Comentário: A seção 'services' (serviços) é onde definimos todos os contêineres que farão parte da nossa aplicação.
+  # Tradução: services = "serviços"
+
+  # --- NOSSA APLICAÇÃO .NET ---
+  orion-health-hub:
+  # Comentário: Este é o nome do primeiro serviço. Ele representa nosso aplicativo .NET.
+  # Você pode dar o nome que quiser, mas é uma boa prática usar algo descritivo.
+
+    build: .
+    # Comentário: 'build: .' (compilar) instrui o Docker a construir a imagem deste contêiner
+    # usando o 'Dockerfile' que está localizado na pasta atual (indicada pelo ponto '.').
+    # Tradução: build = "compilar", . = "pasta atual"
+
+    # 'depends_on' garante que o contêiner do banco de dados (oracle-db)
+    # será iniciado ANTES do contêiner da nossa aplicação.
+    # Tradução: depends_on = "depende de"
+
+    ports:
+    # Comentário: 'ports' (portas) expõe as portas do contêiner para o seu computador (o host).
+    # Tradução: ports = "portas"
+      - "1080:1080"
+      # Comentário: O formato é "PORTA_NO_SEU_PC:PORTA_NO_CONTÊINER".
+      # Isso permite que você acesse a porta 1080 do contêiner a partir da porta 1080 da sua máquina.
+
+    volumes:
+    # Comentário: 'volumes' (volumes) mapeia pastas ou arquivos do seu computador para dentro do contêiner.
+    # Isso permite que os dados persistam mesmo que o contêiner seja removido.
+    # Tradução: volumes = "volumes"
+      - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
+      # Comentário: Mapeia o arquivo do certificado 'orionhealth.pfx' da pasta './certs' da sua máquina para a pasta '/app/certs' dentro do contêiner.
+      # O ':ro' significa "read-only" (somente leitura), uma boa prática de segurança para evitar que o contêiner altere o arquivo.
+      # Tradução: read-only = "somente leitura"
+
+    depends_on:
+    # Comentário: 'depends_on' (depende de) garante que o Docker inicie o serviço 'oracle-db' antes deste serviço.
+      - oracle-db
+      # Comentário: Lista o nome do serviço que este serviço depende.
+
+    environment:
+    # Comentário: 'environment' (ambiente) define variáveis de ambiente dentro do contêiner.
+    # Tradução: environment = "ambiente"
+      - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1;
+      # Comentário: Define a string de conexão com o banco de dados.
+      # AQUI ESTÁ A CHAVE: o 'Data Source' não é 'localhost', mas sim 'oracle-db', que é o nome do serviço do banco de dados definido neste arquivo. Dentro da rede do Docker, os contêineres se comunicam usando os nomes dos serviços.
+
+  # --- BANCO DE DADOS ORACLE ---
+  oracle-db:
+  # Comentário: Este é o segundo serviço, o contêiner do banco de dados Oracle.
+
+    image: gvenzl/oracle-xe:latest
+    # Comentário: 'image' (imagem) diz ao Docker para usar uma imagem pré-existente do Docker Hub.
+    # Neste caso, ele usa a versão mais recente ('latest') do Oracle Express Edition.
+    # Tradução: image = "imagem", latest = "mais recente"
+
+    ports:
+      - "1521:1521"
+      # Comentário: Expõe a porta 1521 do contêiner (padrão do Oracle) para a porta 1521 da sua máquina.
+
+    environment:
+      - ORACLE_PASSWORD=oracle
+      # Comentário: Define uma variável de ambiente para a imagem do Oracle, configurando a senha como 'oracle'.
+      # Isso é um requisito da própria imagem Docker do Oracle.
+
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      # Comentário: Mapeia um "volume nomeado" ('oracle_data') para a pasta onde o Oracle armazena os dados ('/opt/oracle/oradata').
+      # Isso garante que os dados do seu banco persistam mesmo que o contêiner seja reiniciado ou removido.
+      # Tradução: volumes = "volumes", oracle_data = "dados do oracle"
+
+volumes:
+# Comentário: Esta seção define os volumes nomeados que podem ser usados pelos serviços.
+# Tradução: volumes = "volumes"
+  oracle_data:
+  # Comentário: Declara o volume nomeado 'oracle_data' que foi referenciado acima.
+  # Quando o `docker-compose` é executado, ele cria este volume no seu sistema para persistir os dados.
