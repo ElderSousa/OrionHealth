@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OrionHealth.CrossCutting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+620aec2d418870b8c437bc874439816015c48392")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6a89689264a64161af376a95699280c2ff54a295")]
 [assembly: System.Reflection.AssemblyProductAttribute("OrionHealth.CrossCutting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrionHealth.CrossCutting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
