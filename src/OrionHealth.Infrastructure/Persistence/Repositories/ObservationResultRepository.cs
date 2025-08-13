@@ -4,7 +4,6 @@ using OrionHealth.Infrastructure.Persistence.Context;
 
 namespace OrionHealth.Infrastructure.Persistence.Repositories;
 
-// Implementação simples do repositório de resultados.
 public class ObservationResultRepository : IObservationResultRepository
 {
     private readonly ApplicationDbContext _context;
@@ -14,7 +13,6 @@ public class ObservationResultRepository : IObservationResultRepository
         _context = context;
     }
 
-    // A única responsabilidade deste repositório, por enquanto, é adicionar.
     public void Add(ObservationResult observationResult)
     {
         _context.ObservationResults.Add(observationResult);
