@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OrionHealth.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6a89689264a64161af376a95699280c2ff54a295")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a8dba2598817841b75beb564f5620411f0a72f4e")]
 [assembly: System.Reflection.AssemblyProductAttribute("OrionHealth.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrionHealth.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
