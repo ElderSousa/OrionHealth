@@ -13,8 +13,9 @@ class Program
         int port = 1080;
 
         string hl7Data = """
-        MSH|^~\&|TEST_CLIENT|TEST_HOSPITAL|OrionHealth|MainHospital|20250803223000||ORU^R01|MSG_FINAL_TEST|P|2.5.1
+        MSH|^~\&|TEST_CLIENT|TEST_HOSPITAL|OrionHealth|MainHospital|20250803223000||ORU^R01|MSG_FINAL_TEST|P|2.5.1|||UTF-8
         PID|1||98765^^^MRN||Silva^Maria||19750412|F
+        OBR|1|LABORDER_ID^LAB||SODIO^SODIO|||20250803223000|||||||||||||F
         OBX|1|NM|NA^Sodio||142|mEq/L|||||F
         """;
         
