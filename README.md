@@ -51,4 +51,5 @@ Contêinerização: Docker, Docker Compose
 👤 Autor
   Elder Sousa
   GitHub
-  LinkedIn www.linkedin.com/in/elder-sousa-5ab645bb
+  LinkedIn: www.linkedin.com/in/elder-sousa-5ab645bb
+  Docker Hub: eldersousadevelop
