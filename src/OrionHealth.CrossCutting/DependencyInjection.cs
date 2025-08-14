@@ -11,6 +11,8 @@ using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using OrionHealth.Application.UseCases.ReceiveOruR01.Interfaces;
 using OrionHealth.Application.UseCases.ReceiveOruR01;
+using OrionHealth.Infrastructure.HL7;
+
 public static class DependencyInjection
 {
     public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration configuration)
