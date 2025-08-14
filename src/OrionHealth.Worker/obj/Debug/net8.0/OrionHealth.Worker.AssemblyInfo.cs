@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OrionHealth.Worker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d38b473409c27578abfd661d0e4d6706b521625")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c320c076604668a5cf194d8b3db9bb92ec0aa2b")]
 [assembly: System.Reflection.AssemblyProductAttribute("OrionHealth.Worker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrionHealth.Worker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
