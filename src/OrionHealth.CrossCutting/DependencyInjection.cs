@@ -19,6 +19,8 @@ public static class DependencyInjection
 
         services.AddInfrastructure(configuration);
 
+        services.AddLogging();
+
         return services;
     }
 
