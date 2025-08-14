@@ -1631,6 +1631,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "Microsoft.Extensions.Logging": "9.0.8",
           "OrionHealth.Domain": "1.0.0"
         },
         "compile": {
