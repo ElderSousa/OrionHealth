@@ -81,7 +81,6 @@ public class HapiParser : IHL7Parser
             msh.FieldSeparator.Value = "|";
             msh.EncodingCharacters.Value = "^~\\&";
             
-            // Preenchemos o resto do MSH, invertendo remetente/destinatário.
             msh.MessageType.MessageCode.Value = "ACK";
             msh.SendingApplication.NamespaceID.Value = terserOriginal.Get("MSH-5-1");
             msh.SendingFacility.NamespaceID.Value = terserOriginal.Get("MSH-6-1");
