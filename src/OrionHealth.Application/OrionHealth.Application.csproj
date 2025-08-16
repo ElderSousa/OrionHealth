@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
+     <PackageReference Include="nhapi.base" Version="3.2.3" />
+    <PackageReference Include="nhapi.model.v251" Version="3.2.4" />
   </ItemGroup>
 
   <PropertyGroup>
