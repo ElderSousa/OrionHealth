@@ -105,6 +105,26 @@ public class HapiParser : IHL7Parser
             return $"MSH|^~\\&|||||{DateTime.Now:yyyyMMddHHmmss}||ACK||P|2.5.1\rMSA|AE||Mensagem HL7 mal formada ou erro interno ao gerar NAK.";
         }
     }
+    /// <summary>
+    /// Faz o parse de uma mensagem HL7 ADT^A01 e extrai os dados do paciente.
+    /// Este método utiliza parâmetro 'out' para retornar valor (o paciente).
+    /// </summary>
+    /// <param name="hl7Message">A mensagem ADT_A01 em formato de texto (string).</param>
+    /// <param name="patient">Parâmetro de saída: O objeto Patient preenchido com os dados da mensagem.</param>
+    public void ParseAdtA08(string hl7Message, out Patient patient)
+    {
+        _logger.LogInformation("HapiParser: Iniciando parse de ADT_A08");
+        var adtMessege = _parser.Parse(hl7Message) as ADT_A01;
+        var pidSegment = adtMessege?.PID;
+
+        patient = new Patient
+        {
+            MedicalRecordNumber = pidSegment?.GetPatientIdentifierList().FirstOrDefault()?.IDNumber.Value ?? string.Empty,
+            FullName = pidSegment?.GetPatientName(0).FamilyName.Surname.Value + " " + pidSegment?.GetPatientName(0).GivenName.Value,
+            DateOfBirth = ParseHl7Date(pidSegment?.DateTimeOfBirth.Time.Value)
+        };
+
+    }
 
     /// <summary>
     /// Faz o parse de uma mensagem HL7 ORU^R01 e extrai os dados do paciente e de seus resultados de observação.
