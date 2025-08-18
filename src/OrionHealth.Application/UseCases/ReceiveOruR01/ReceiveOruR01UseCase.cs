@@ -112,10 +112,20 @@ public class ReceiveOruR01UseCase : IReceiveOruR01UseCase
 
     private string VerifyTypeHL7(string HL7Message)
     {
-        var HL7Original = _piperParser.Parse(HL7Message);
-        var terserHL7 = new Terser(HL7Original);
+        try
+        {
+            var HL7Original = _piperParser.Parse(HL7Message);
+            var terserHL7 = new Terser(HL7Original);
 
-        return terserHL7.Get("MSH-9-1"); 
-        
+            var member1 = terserHL7.Get("MSH-9-1");
+            var member2 = terserHL7.Get("MSH-9-2");
+            
+            return $"{member1}^{member2}";
+        }
+        catch (Exception ex)
+        {
+             _logger.LogError(ex, "Erro ao fazer o parse do tipo de mensagem HL7.");
+            return string.Empty;
+        }     
     }
 }

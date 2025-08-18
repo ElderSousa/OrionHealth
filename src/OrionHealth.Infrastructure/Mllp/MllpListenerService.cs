@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using OrionHealth.Application.UseCases.ReceiveOruR01.Interfaces;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 public class MllpListenerService : BackgroundService
 {
@@ -21,13 +23,13 @@ public class MllpListenerService : BackgroundService
     private const char END_OF_BLOCK = (char)0x1C;
     private const char CARRIAGE_RETURN = (char)0x0D;
 
-    public MllpListenerService(ILogger<MllpListenerService> logger, IServiceProvider serviceProvider)
+    public MllpListenerService(ILogger<MllpListenerService> logger, IServiceProvider serviceProvider, IConfiguration configuration)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
-        var certPath = @"/app/certs/orionhealth.pfx";
-        var certPassword = "123456"; // <-- CONFIRME SE A SENHA ESTÁ CORRETA
-        _serverCertificate = new X509Certificate2(certPath, certPassword);
+        var certPath = configuration["Mllp:CertificatePath"];
+        var certPassword = "123456";
+        _serverCertificate = new X509Certificate2(certPath!, certPassword);
         _logger.LogInformation("Certificado do servidor '{Subject}' carregado com sucesso.", _serverCertificate.Subject);
     }
 
