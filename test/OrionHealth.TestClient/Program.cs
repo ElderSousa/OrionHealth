@@ -9,15 +9,20 @@ class Program
     static async Task Main(string[] args)
     {
 
-        Console.WriteLine("Aguardando o servidor iniciar... (5 segundo)");
-        Thread.Sleep(5000);
+        //Console.WriteLine("Aguardando o servidor iniciar... (5 segundo)");
+        //Thread.Sleep(5000);
 
         string serverAddress = "localhost";
         int port = 1080;
 
         string hl7Data = """
-        MSH|^~\&|TEST_CLIENT|TEST_HOSPITAL|OrionHealth|MainHospital|20250803223000||ADT^A08|MSG_UPDATE_TEST|P|2.5.1|||UTF-8
-        PID|1||98765^^^MRN||Silva Souza^Maria||19750412|F
+        MSH|^~\&|LAB_SYSTEM|CENTRAL_LAB|HOSPITAL_HIS|MAIN_HOSPITAL|20250818153000||ORU^R01|MSGID12345|P|2.5.1
+        PID|1||12345^^^MRN||Silva^Joao||19800515|M
+        PV1|1|I|WARD1^BED2^HOSP1|||||DOC007^Medico^Dr
+        ORC|RE||ORDERID9876
+        OBR|1|ORDERID9876||CBC^Complete Blood Count|||20250818152500
+        OBX|1|NM|HGB^Hemoglobin||14.5|g/dL|13.5-17.5||||F
+        OBX|2|NM|WBC^White Blood Cell Count||7.8|x10^9/L|4.0-11.0||||F
         """;
         
         string mllpMessage = (char)0x0B + hl7Data.Replace("\r\n", "\r") + (char)0x1C + (char)0x0D;
