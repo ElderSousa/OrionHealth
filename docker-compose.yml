@@ -13,7 +13,6 @@ services:
 
     depends_on:
       - oracle-db
-      # Comentário: Lista o nome do serviço que este serviço depende.
 
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1;
