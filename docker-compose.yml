@@ -1,34 +1,24 @@
 services:
-
-  # --- APLICAÇÃO .NET ---
   orion-health-hub:
-
     build: .
-
     ports:
       - "1080:1080"
-
     volumes:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
-
+    # depends_on simples espera apenas que o contentor do Oracle inicie.
     depends_on:
       - oracle-db
-
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1;
 
-  # --- BANCO DE DADOS ORACLE ---
   oracle-db:
-
     image: gvenzl/oracle-xe:latest
-
     ports:
       - "1521:1521"
-
     environment:
       - ORACLE_PASSWORD=oracle
-
     volumes:
+      # Esta linha é a ÚNICA dependência externa. A pasta deve existir.
       - oracle_data:/opt/oracle/oradata
 
 volumes:
