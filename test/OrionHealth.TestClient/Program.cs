@@ -16,10 +16,20 @@ class Program
         int port = 1080;
 
         string hl7Data = """
-        MSH|^~\&|HOSPITAL_HIS|MAIN_HOSPITAL|LAB_SYSTEM|CENTRAL_LAB|20250820140000||ADT^A08|MSGID67890|P|2.5.1
-        EVN|A08|20250820140000
-        PID|1||12345^^^MRN||Silva de Oliveira^Joao||19800515|M
-        """;
+         MSH|^~\&|HOSPITAL_HIS|MAIN_HOSPITAL|LAB_SYSTEM|CENTRAL_LAB|20250820140000||ADT^A08|MSGID67890|P|2.5.1
+         EVN|A08|20250820140000
+         PID|1||12345^^^MRN||Silva de Oliveira^Joao||19800515|M
+         """;
+
+        /*string hl7Data = """ 
+        MSH|^~\&|LAB_SYSTEM|CENTRAL_LAB|HOSPITAL_HIS|MAIN_HOSPITAL|20250820123500||ORU^R01|MSGID12345-CORR1|P|2.5.1
+        PID|1||12345^^^MRN||Silva^Joao||19800515|M
+        PV1|1|I|WARD1^BED2^HOSP1|||||DOC007^Medico^Dr
+        ORC|CR||ORDERID9876
+        OBR|1|ORDERID9876||CBC^Complete Blood Count|||20250818152500
+        OBX|1|NM|HGB^Hemoglobin||13.9|g/dL|13.5-17.5||||C
+        OBX|2|NM|WBC^White Blood Cell Count||7.8|x10^9/L|4.0-11.0||||C
+        """;*/
 
         string mllpMessage = (char)0x0B + hl7Data.Replace("\r\n", "\r") + (char)0x1C + (char)0x0D;
 
