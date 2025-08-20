@@ -5,6 +5,7 @@ services:
       - "1080:1080"
     volumes:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
+    # depends_on simples espera apenas que o contentor do Oracle inicie.
     depends_on:
       - oracle-db
     environment:
@@ -16,10 +17,8 @@ services:
       - "1521:1521"
     environment:
       - ORACLE_PASSWORD=oracle
-      - APP_USER=orionhealth
-      - APP_USER_PASSWORD=oracle
     volumes:
-      - ./oracle-init:/container-entrypoint-initdb.d
+      # Esta linha é a ÚNICA dependência externa. A pasta deve existir.
       - oracle_data:/opt/oracle/oradata
 
 volumes:
