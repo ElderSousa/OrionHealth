@@ -12,9 +12,6 @@ class Program
         //Console.WriteLine("Aguardando o servidor iniciar... (5 segundo)");
         //Thread.Sleep(5000);
 
-        //Console.WriteLine("Aguardando o servidor iniciar... (5 segundo)");
-        //Thread.Sleep(5000);
-
         string serverAddress = "localhost";
         int port = 1080;
 

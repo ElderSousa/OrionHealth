@@ -7,7 +7,6 @@ services:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
     depends_on:
       - oracle-db
-
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1;
 
