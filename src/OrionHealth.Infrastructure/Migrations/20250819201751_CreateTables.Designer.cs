@@ -12,7 +12,7 @@ using OrionHealth.Infrastructure.Persistence.Context;
 namespace OrionHealth.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250820175742_CreateTables")]
+    [Migration("20250819201751_CreateTables")]
     partial class CreateTables
     {
         /// <inheritdoc />

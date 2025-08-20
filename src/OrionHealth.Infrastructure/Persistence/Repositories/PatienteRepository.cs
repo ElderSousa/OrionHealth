@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OrionHealth.Application.Interfaces.Persistence;
 using OrionHealth.Domain.Entities;
 using OrionHealth.Infrastructure.Persistence.Context;
-using Dapper;
+using Dapper; 
 using System.Data;
 
 namespace OrionHealth.Infrastructure.Persistence.Repositories;
@@ -28,10 +28,5 @@ public class PatientRepository : IPatientRepository
         var sql = "SELECT * FROM PATIENTS WHERE MEDICAL_RECORD_NUMBER = :mrn";
 
         return await _dbConnection.QueryFirstOrDefaultAsync<Patient>(sql, new { mrn });
-    }
-
-    public void Update(Patient patient)
-    {
-        _context.Patients.Update(patient);
     }
 }
