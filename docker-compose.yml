@@ -1,35 +1,26 @@
 services:
-
-  # --- APLICAÇÃO .NET ---
   orion-health-hub:
-
     build: .
-
     ports:
       - "1080:1080"
-
     volumes:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
-
     depends_on:
       - oracle-db
-      # Comentário: Lista o nome do serviço que este serviço depende.
 
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1;
 
-  # --- BANCO DE DADOS ORACLE ---
   oracle-db:
-
     image: gvenzl/oracle-xe:latest
-
     ports:
       - "1521:1521"
-
     environment:
       - ORACLE_PASSWORD=oracle
-
+      - APP_USER=orionhealth
+      - APP_USER_PASSWORD=oracle
     volumes:
+      - ./oracle-init:/container-entrypoint-initdb.d
       - oracle_data:/opt/oracle/oradata
 
 volumes:
