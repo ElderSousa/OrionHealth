@@ -82,11 +82,14 @@ public class ReceiveOruR01UseCase : IReceiveOruR01UseCase
                     string nakMessage = _hl7Parser.CreateNak(hl7Message, "Patient not found");
                     return new Hl7ProcessingResult(false, nakMessage);
                 }
-                     
+
                 _logger.LogInformation("Paciente com MRN {MRN} encontrado (ID: {PatientId}). Atualizando dados.", existingPatient.MedicalRecordNumber, existingPatient.Id);
                 existingPatient.FullName = patient.FullName;
                 existingPatient.DateOfBirth = patient.DateOfBirth;
-                patient = existingPatient;         
+                existingPatient.MedicalRecordNumber = patient.MedicalRecordNumber;
+                patient = existingPatient;
+
+                _unitOfWork.Patients.Update(patient);
             }
             else
             {
@@ -105,7 +108,7 @@ public class ReceiveOruR01UseCase : IReceiveOruR01UseCase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro inesperado durante o processamento da mensagem HL7. Mensagem: {ErrorMessage}", ex.Message);
-            string nakMessage = _hl7Parser.CreateNak(hl7Message, ex.Message);
+            string nakMessage = ex.InnerException != null ? _hl7Parser.CreateAck(ex.InnerException.Message) : _hl7Parser.CreateNak(hl7Message, ex.Message);
             return new Hl7ProcessingResult(false, nakMessage);
         }
     }
@@ -119,13 +122,13 @@ public class ReceiveOruR01UseCase : IReceiveOruR01UseCase
 
             var member1 = terserHL7.Get("MSH-9-1");
             var member2 = terserHL7.Get("MSH-9-2");
-            
+
             return $"{member1}^{member2}";
         }
         catch (Exception ex)
         {
-             _logger.LogError(ex, "Erro ao fazer o parse do tipo de mensagem HL7.");
+            _logger.LogError(ex, "Erro ao fazer o parse do tipo de mensagem HL7.");
             return string.Empty;
-        }     
+        }
     }
 }
