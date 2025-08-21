@@ -15,6 +15,7 @@
     <PackageReference Include="nhapi.model.v251" Version="3.2.4" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="8.21.121" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.120" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
   </ItemGroup>
 
   <PropertyGroup>
