@@ -7,9 +7,10 @@ services:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
     depends_on:
       - oracle-db
+      - rabbitmq
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1;
-
+      - MessageBroker__HostName=rabbitmq
   oracle-db:
     image: gvenzl/oracle-xe:latest
     ports:
@@ -22,5 +23,13 @@ services:
       - ./oracle-init:/container-entrypoint-initdb.d
       - oracle_data:/opt/oracle/oradata
 
+rabbitmq:
+  image: rabbitmq:3.13-management
+  ports:
+    - "5672:5672"
+    - "15672:15672"
+  environmetn:
+    - RABBIT_DEFAULT_USER=guest
+    - RABBIT_DEFAULT_PASS=guest
 volumes:
   oracle_data:
