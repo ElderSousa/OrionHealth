@@ -8,8 +8,8 @@
             "preLaunchTask": "build-worker",
             "program": "${workspaceFolder}/src/OrionHealth.Worker/bin/Debug/net8.0/OrionHealth.Worker.dll",
             "args": [
-                "--environment", // <-- INÍCIO DA CORREÇÃO
-                "Development"    // <-- FIM DA CORREÇÃO
+                "--environment", 
+                "Development" 
             ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
