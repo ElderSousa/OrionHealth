@@ -1,7 +1,4 @@
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OrionHealth.Application.UseCases.ReceiveOruR01.Interfaces;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

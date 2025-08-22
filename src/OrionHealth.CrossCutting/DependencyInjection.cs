@@ -10,7 +10,7 @@ using System.Data;
 using OrionHealth.Application.UseCases.ReceiveOruR01.Interfaces;
 using OrionHealth.Application.UseCases.ReceiveOruR01;
 using OrionHealth.Infrastructure.HL7;
-using RabbitMQ.Client; // Adicione este using
+using RabbitMQ.Client;
 
 namespace OrionHealth.CrossCutting
 {
@@ -38,12 +38,12 @@ namespace OrionHealth.CrossCutting
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSingleton<IHL7Parser, HapiParser>();
 
-            // --- INÍCIO DA CORREÇÃO DEFINITIVA ---
-            // Registramos a conexão e o canal do RabbitMQ como Singletons.
-            // A aplicação irá criar e gerir uma única conexão para ser reutilizada.
             services.AddSingleton<IConnection>(sp =>
             {
-                var factory = new ConnectionFactory() { HostName = configuration["MessageBroker:HostName"] };
+                var factory = new ConnectionFactory()
+                {
+                    HostName = configuration["MessageBroker:HostName"]
+                };
                 return factory.CreateConnection();
             });
 
@@ -52,8 +52,7 @@ namespace OrionHealth.CrossCutting
                 var connection = sp.GetRequiredService<IConnection>();
                 return connection.CreateModel();
             });
-            // --- FIM DA CORREÇÃO DEFINITIVA ---
-
+            
             return services;
         }
     }

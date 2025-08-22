@@ -8,18 +8,15 @@ class Program
 {
     static async Task Main(string[] args)
     {
-
-        //Console.WriteLine("Aguardando o servidor iniciar... (5 segundo)");
-        //Thread.Sleep(5000);
-
+        
         string serverAddress = "localhost";
         int port = 1080;
 
         string hl7Data = """
-         MSH|^~\&|HOSPITAL_HIS|MAIN_HOSPITAL|LAB_SYSTEM|CENTRAL_LAB|20250820140000||ADT^A08|MSGID67890|P|2.5.1
-         EVN|A08|20250820140000
-         PID|1||12345^^^MRN||Silva de Oliveira^Joao||19800515|M
-         """;
+        MSH|^~\&|HOSPITAL_HIS|MAIN_HOSPITAL|LAB_SYSTEM|CENTRAL_LAB|20250820140000||ADT^A08|MSGID67890|P|2.5.1
+        EVN|A08|20250820140000
+        PID|1||12345^^^MRN||Silva de Oliveira^Joao||19800515|M
+        """;
 
         /*string hl7Data = """ 
         MSH|^~\&|LAB_SYSTEM|CENTRAL_LAB|HOSPITAL_HIS|MAIN_HOSPITAL|20250820123500||ORU^R01|MSGID12345-CORR1|P|2.5.1
