@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Worker (Server)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-worker",
+            "program": "${workspaceFolder}/src/OrionHealth.Worker/bin/Debug/net8.0/OrionHealth.Worker.dll",
+            "args": [
+                "--environment", // <-- INÍCIO DA CORREÇÃO
+                "Development"    // <-- FIM DA CORREÇÃO
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Run TestClient",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-testclient",
+            "program": "${workspaceFolder}/test/OrionHealth.TestClient/bin/Debug/net8.0/OrionHealth.TestClient.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/test/OrionHealth.TestClient",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Run Server + Client",
+            "configurations": ["Run Worker (Server)", "Run TestClient"]
+        }
+    ]
+}

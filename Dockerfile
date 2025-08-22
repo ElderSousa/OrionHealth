@@ -11,18 +11,22 @@ COPY ["src/OrionHealth.CrossCutting/OrionHealth.CrossCutting.csproj", "src/Orion
 COPY ["src/OrionHealth.Domain/OrionHealth.Domain.csproj", "src/OrionHealth.Domain/"]
 COPY ["src/OrionHealth.Infrastructure/OrionHealth.Infrastructure.csproj", "src/OrionHealth.Infrastructure/"]
 COPY ["src/OrionHealth.Worker/OrionHealth.Worker.csproj", "src/OrionHealth.Worker/"]
-COPY ["src/OrionHealth.Hl7Processor/OrionHealth.Hl7Processor.csproj", "src/OrionHealth.Hl7Processor/"]
+COPY ["src/OrionHealth.WorkerHl7Processor/OrionHealth.WorkerHl7Processor.csproj", "src/OrionHealth.WorkerHl7Processor/"]
+# --- INÍCIO DA CORREÇÃO ---
+# Adicionamos a cópia do projeto de teste que estava em falta.
+COPY ["test/OrionHealth.TestClient/OrionHealth.TestClient.csproj", "test/OrionHealth.TestClient/"]
+# --- FIM DA CORREÇÃO ---
 RUN dotnet restore "OrionHealth.sln"
 
 COPY . .
-WORKDIR "/src/src"
-RUN dotnet build "OrionHealth.Worker/OrionHealth.Worker.csproj" -c Release -o /app/build/worker
-RUN dotnet build "OrionHealth.Hl7Processor/OrionHealth.Hl7Processor.csproj" -c Release -o /app/build/processor
+WORKDIR "/src"
+RUN dotnet build "src/OrionHealth.Worker/OrionHealth.Worker.csproj" -c Release -o /app/build/worker
+RUN dotnet build "src/OrionHealth.WorkerHl7Processor/OrionHealth.WorkerHl7Processor.csproj" -c Release -o /app/build/processor
 
 # Estágio 3: Publish - Publica as duas aplicações
 FROM build AS publish
-RUN dotnet publish "OrionHealth.Worker/OrionHealth.Worker.csproj" -c Release -o /app/publish/worker
-RUN dotnet publish "OrionHealth.Hl7Processor/OrionHealth.Hl7Processor.csproj" -c Release -o /app/publish/processor
+RUN dotnet publish "src/OrionHealth.Worker/OrionHealth.Worker.csproj" -c Release -o /app/publish/worker
+RUN dotnet publish "src/OrionHealth.WorkerHl7Processor/OrionHealth.WorkerHl7Processor.csproj" -c Release -o /app/publish/processor
 
 # Estágio Final 1: Imagem final para o Gateway (Worker)
 FROM base AS gateway-final
@@ -34,4 +38,4 @@ ENTRYPOINT ["dotnet", "OrionHealth.Worker.dll"]
 FROM base AS processor-final
 WORKDIR /app
 COPY --from=publish /app/publish/processor .
-ENTRYPOINT ["dotnet", "OrionHealth.Hl7Processor.dll"]
+ENTRYPOINT ["dotnet", "OrionHealth.WorkerHl7Processor.dll"]

@@ -1,31 +1,35 @@
 services:
-  # O nosso Gateway (antigo orion-health-hub)
   gateway:
     build:
       context: .
       dockerfile: Dockerfile
-      target: gateway-final # Diz para usar o estágio 'gateway-final' do Dockerfile
+      target: gateway-final
     ports:
       - "1080:1080"
     volumes:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
+    # Agora espera que AMBOS os serviços estejam saudáveis
     depends_on:
-      - oracle-db
-      - rabbitmq
+      oracle-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1
       - MessageBroker__HostName=rabbitmq
       - Mllp__CertificatePath=/app/certs/orionhealth.pfx
 
-  # O nosso novo Processador de HL7
   hl7-processor:
     build:
       context: .
       dockerfile: Dockerfile
-      target: processor-final # Diz para usar o estágio 'processor-final' do Dockerfile
+      target: processor-final
+    # Agora espera que AMBOS os serviços estejam saudáveis
     depends_on:
-      - oracle-db
-      - rabbitmq
+      oracle-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1
       - MessageBroker__HostName=rabbitmq
@@ -38,7 +42,15 @@ services:
       - ORACLE_PASSWORD=oracle
       - APP_USER=orionhealth
       - APP_USER_PASSWORD=oracle
+    healthcheck:
+      # Verifica se o serviço XEPDB1 está pronto
+      test: ["CMD-SHELL", "tnsping XEPDB1 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 2m
     volumes:
+      - ./oracle-init:/container-entrypoint-initdb.d
       - oracle_data:/opt/oracle/oradata
 
   rabbitmq:
@@ -49,6 +61,12 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      # Verifica se o serviço RabbitMQ está pronto
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   oracle_data:

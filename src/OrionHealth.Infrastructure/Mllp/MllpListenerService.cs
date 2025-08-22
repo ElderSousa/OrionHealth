@@ -16,7 +16,7 @@ namespace OrionHealth.Infrastructure.Mllp
     {
         private readonly ILogger<MllpListenerService> _logger;
         private readonly IHL7Parser _hl7Parser;
-        private readonly IModel _rabbitChannel; // Apenas o canal é necessário aqui
+        private readonly IModel _rabbitChannel;
         private readonly X509Certificate2 _serverCertificate;
 
         private const char START_OF_BLOCK = (char)0x0B;
@@ -24,18 +24,16 @@ namespace OrionHealth.Infrastructure.Mllp
         private const char CARRIAGE_RETURN = (char)0x0D;
         private const string HL7_PROCESSING_QUEUE = "hl7_processamento";
 
-        // O construtor agora é muito mais simples. Ele apenas "pede" o que precisa.
         public MllpListenerService(ILogger<MllpListenerService> logger, IConfiguration configuration, IHL7Parser hl7Parser, IModel rabbitChannel)
         {
             _logger = logger;
             _hl7Parser = hl7Parser;
-            _rabbitChannel = rabbitChannel; // Recebido via injeção de dependência
+            _rabbitChannel = rabbitChannel;
 
             var certPath = configuration["Mllp:CertificatePath"];
             var certPassword = "123456"; 
-            _serverCertificate = new X509Certificate2(certPath, certPassword);
+            _serverCertificate = new X509Certificate2(certPath!, certPassword);            
             
-            // A declaração da fila continua a ser uma boa prática para garantir que ela existe.
             _rabbitChannel.QueueDeclare(queue: HL7_PROCESSING_QUEUE,
                                        durable: true,
                                        exclusive: false,
@@ -44,7 +42,6 @@ namespace OrionHealth.Infrastructure.Mllp
             _logger.LogInformation("Conexão com RabbitMQ verificada e fila '{QueueName}' declarada.", HL7_PROCESSING_QUEUE);
         }
         
-        // O resto do seu código (ExecuteAsync, HandleClientAsync) não precisa de alterações.
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var listener = new TcpListener(IPAddress.Any, 1080);
