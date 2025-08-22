@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OrionHealth.Application\OrionHealth.Application.csproj" />
     <ProjectReference Include="..\OrionHealth.Infrastructure\OrionHealth.Infrastructure.csproj" />
+    <ProjectReference Include="..\OrionHealth.Domain\OrionHealth.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
