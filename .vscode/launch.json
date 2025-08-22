@@ -1,4 +1,3 @@
-
 {
     "version": "0.2.0",
     "configurations": [
@@ -8,13 +7,13 @@
             "request": "launch",
             "preLaunchTask": "build-worker",
             "program": "${workspaceFolder}/src/OrionHealth.Worker/bin/Debug/net8.0/OrionHealth.Worker.dll",
-            "args": [],
+            "args": [
+                "--environment", 
+                "Development" 
+            ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
-            "console": "internalConsole",
-            "env": {
-                "DOTNET_ENVIRONMENT": "Development"
-            }
+            "console": "internalConsole"
         },
         {
             "name": "Run TestClient",
@@ -35,3 +34,4 @@
         }
     ]
 }
+
