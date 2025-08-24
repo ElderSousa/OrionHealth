@@ -48,3 +48,6 @@ bin/**/zh-Hant/
 *.cache
 *.log
 Properties/launchSettings.json
+
+# Ignorar arquivo de variáveis de ambiente
+.env
