@@ -8,7 +8,6 @@ services:
       - "1080:1080"
     volumes:
       - ./certs/orionhealth.pfx:/app/certs/orionhealth.pfx:ro
-    # Agora espera que AMBOS os serviços estejam saudáveis
     depends_on:
       oracle-db:
         condition: service_healthy
@@ -24,7 +23,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: processor-final
-    # Agora espera que AMBOS os serviços estejam saudáveis
     depends_on:
       oracle-db:
         condition: service_healthy
@@ -33,6 +31,19 @@ services:
     environment:
       - ConnectionStrings__OracleConnection=User Id=orionhealth;Password=oracle;Data Source=oracle-db:1521/XEPDB1
       - MessageBroker__HostName=rabbitmq
+
+  notifier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: notifier-final
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - MessageBroker__HostName=rabbitmq
+      - Twilio__AccountSid=${TWILIO_ACCOUNT_SID}
+      - Twilio__AuthToken=${TWILIO_AUTH_TOKEN}
 
   oracle-db:
     image: gvenzl/oracle-xe:latest
@@ -43,7 +54,6 @@ services:
       - APP_USER=orionhealth
       - APP_USER_PASSWORD=oracle
     healthcheck:
-      # Verifica se o serviço XEPDB1 está pronto
       test: ["CMD-SHELL", "tnsping XEPDB1 || exit 1"]
       interval: 10s
       timeout: 10s
@@ -62,11 +72,15 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     healthcheck:
-      # Verifica se o serviço RabbitMQ está pronto
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
       timeout: 5s
       retries: 10
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    # ESTA LINHA CORRIGE O PROBLEMA DE PERMISSÃO
+    command: sh -c "chown -R rabbitmq:rabbitmq /var/lib/rabbitmq && docker-entrypoint.sh rabbitmq-server"
 
 volumes:
   oracle_data:
+  rabbitmq_data:
