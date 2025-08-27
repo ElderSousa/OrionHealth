@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.Json;
-using OrionHealth.Notifier.Services;
+using OrionHealth.Notification.Services;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace OrionHealth.Notifier
+namespace OrionHealth.Notification
 {
     // Criamos uma classe para representar a estrutura do nosso evento de notificação
     public class NotificationEvent

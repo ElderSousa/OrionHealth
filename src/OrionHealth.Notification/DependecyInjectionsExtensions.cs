@@ -1,5 +1,6 @@
-using OrionHealth.Notifier.Services;
-
+using OrionHealth.Notification.Services;
+using RabbitMQ.Client;
+namespace OrionHealth.Notification;
 public static class DependecyInjectionsExtensions
 {
     public static IServiceCollection AddDependencyInjection(this IServiceCollection services, IConfiguration configuration)
@@ -21,16 +22,18 @@ public static class DependecyInjectionsExtensions
     {
         services.AddSingleton(sp =>
         {
-            var factory = new RabbitMQ.Client.ConnectionFactory()
+            var factory = new ConnectionFactory()
             {
-                HostName = configuration["MessageBroker:HostName"]
+                HostName = configuration["MessageBroker:HostName"],
+                AutomaticRecoveryEnabled = true,   // reconecta automático
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(10) // tenta de novo a cada 10s
             };
             return factory.CreateConnection();
         });
 
         services.AddSingleton(sp =>
         {
-            var connection = sp.GetRequiredService<RabbitMQ.Client.IConnection>();
+            var connection = sp.GetRequiredService<IConnection>();
             return connection.CreateModel();
         });
 

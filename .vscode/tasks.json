@@ -14,6 +14,30 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build-hl7processor",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/OrionHealth.Hl7Processor/OrionHealth.Hl7Processor.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-notification",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/OrionHealth.Notification/OrionHealth.Notification.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build-testclient",
             "command": "dotnet",
             "type": "process",

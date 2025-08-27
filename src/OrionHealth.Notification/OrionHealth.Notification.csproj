@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-OrionHealth.Notifier-265c23f7-887f-4156-8f1c-9bb797efdb7b</UserSecretsId>
+    <UserSecretsId>dotnet-OrionHealth.Notification-265c23f7-887f-4156-8f1c-9bb797efdb7b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrionHealth.CrossCutting\OrionHealth.CrossCutting.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -2,14 +2,42 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run Worker (Server)",
+            "name": "Run Gateway (Worker)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-worker",
             "program": "${workspaceFolder}/src/OrionHealth.Worker/bin/Debug/net8.0/OrionHealth.Worker.dll",
             "args": [
-                "--environment", 
-                "Development" 
+                "--environment",
+                "Development"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Run Hl7Processor",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-hl7processor",
+            "program": "${workspaceFolder}/src/OrionHealth.Hl7Processor/bin/Debug/net8.0/OrionHealth.Hl7Processor.dll",
+            "args": [
+                "--environment",
+                "Development"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Run Notification",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-notification",
+            "program": "${workspaceFolder}/src/OrionHealth.Notification/bin/Debug/net8.0/OrionHealth.Notification.dll",
+            "args": [
+                "--environment",
+                "Development"
             ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
@@ -29,9 +57,13 @@
     ],
     "compounds": [
         {
-            "name": "Run Server + Client",
-            "configurations": ["Run Worker (Server)", "Run TestClient"]
+            "name": "Run All Services + Client",
+            "configurations": [
+                "Run Gateway (Worker)",
+                "Run Hl7Processor",
+                "Run Notification",
+                "Run TestClient"
+            ]
         }
     ]
 }
-

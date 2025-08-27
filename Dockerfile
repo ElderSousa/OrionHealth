@@ -16,8 +16,8 @@ RUN dotnet build "OrionHealth.sln" -c Release
 # Estágio 3: Publish - Publica as três aplicações
 FROM build AS publish
 RUN dotnet publish "src/OrionHealth.Worker/OrionHealth.Worker.csproj" -c Release -o /app/publish/gateway
-RUN dotnet publish "src/OrionHealth.WorkerHl7Processor/OrionHealth.WorkerHl7Processor.csproj" -c Release -o /app/publish/processor
-RUN dotnet publish "src/OrionHealth.Notifier/OrionHealth.Notifier.csproj" -c Release -o /app/publish/notifier
+RUN dotnet publish "src/OrionHealth.Hl7Processor/OrionHealth.Hl7Processor.csproj" -c Release -o /app/publish/processor
+RUN dotnet publish "src/OrionHealth.Notification/OrionHealth.Notification.csproj" -c Release -o /app/publish/notifier
 
 # --- Imagens Finais ---
 
@@ -31,10 +31,10 @@ ENTRYPOINT ["dotnet", "OrionHealth.Worker.dll"]
 FROM base AS processor-final
 WORKDIR /app
 COPY --from=publish /app/publish/processor .
-ENTRYPOINT ["dotnet", "OrionHealth.WorkerHl7Processor.dll"]
+ENTRYPOINT ["dotnet", "OrionHealth.Hl7Processor.dll"]
 
 # Imagem final para o Notificador (Notifier)
 FROM base AS notifier-final
 WORKDIR /app
 COPY --from=publish /app/publish/notifier .
-ENTRYPOINT ["dotnet", "OrionHealth.Notifier.dll"]
+ENTRYPOINT ["dotnet", "OrionHealth.Notification.dll"]
