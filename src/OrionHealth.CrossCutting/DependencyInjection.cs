@@ -38,30 +38,7 @@ namespace OrionHealth.CrossCutting
             services.AddScoped<IDbConnection>(sp => new OracleConnection(connectionString));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSingleton<IHL7Parser, HapiParser>();
-            services.RabbitMQSetup(configuration);
             
-            return services;
-        }
-
-        private static IServiceCollection RabbitMQSetup(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSingleton(sp =>
-            {
-                var factory = new ConnectionFactory()
-                {
-                    HostName = configuration["MessageBroker:HostName"],
-                    AutomaticRecoveryEnabled = true,   // reconecta automático
-                    NetworkRecoveryInterval = TimeSpan.FromSeconds(10) // tenta de novo a cada 10s
-                };
-                return factory.CreateConnection();
-            });
-
-            services.AddSingleton(sp =>
-            {
-                var connection = sp.GetRequiredService<IConnection>();
-                return connection.CreateModel();
-            });
-
             return services;
         }
     }

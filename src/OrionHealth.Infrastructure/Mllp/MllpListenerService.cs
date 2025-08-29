@@ -1,14 +1,13 @@
 using System.Net.Security;
-using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using Microsoft.Extensions.Configuration;
+using OrionHealth.RabbitMQ;
 using OrionHealth.Application.Interfaces;
-using RabbitMQ.Client;
 
 namespace OrionHealth.Infrastructure.Mllp
 {
@@ -16,7 +15,7 @@ namespace OrionHealth.Infrastructure.Mllp
     {
         private readonly ILogger<MllpListenerService> _logger;
         private readonly IHL7Parser _hl7Parser;
-        private readonly IModel _rabbitChannel;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly X509Certificate2 _serverCertificate;
 
         private const char START_OF_BLOCK = (char)0x0B;
@@ -24,24 +23,21 @@ namespace OrionHealth.Infrastructure.Mllp
         private const char CARRIAGE_RETURN = (char)0x0D;
         private const string HL7_PROCESSING_QUEUE = "hl7_processamento";
 
-        public MllpListenerService(ILogger<MllpListenerService> logger, IConfiguration configuration, IHL7Parser hl7Parser, IModel rabbitChannel)
+        public MllpListenerService(
+            ILogger<MllpListenerService> logger,
+            IConfiguration configuration,
+            IHL7Parser hl7Parser,
+            IMessagePublisher messagePublisher)
         {
             _logger = logger;
             _hl7Parser = hl7Parser;
-            _rabbitChannel = rabbitChannel;
+            _messagePublisher = messagePublisher;
 
             var certPath = configuration["Mllp:CertificatePath"];
             var certPassword = "123456"; 
-            _serverCertificate = new X509Certificate2(certPath!, certPassword);            
-            
-            _rabbitChannel.QueueDeclare(queue: HL7_PROCESSING_QUEUE,
-                                       durable: true,
-                                       exclusive: false,
-                                       autoDelete: false,
-                                       arguments: null);
-            _logger.LogInformation("Conexão com RabbitMQ verificada e fila '{QueueName}' declarada.", HL7_PROCESSING_QUEUE);
+            _serverCertificate = new X509Certificate2(certPath!, certPassword);
         }
-        
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var listener = new TcpListener(IPAddress.Any, 1080);
@@ -66,32 +62,31 @@ namespace OrionHealth.Infrastructure.Mllp
                     await sslStream.AuthenticateAsServerAsync(
                         serverCertificate: _serverCertificate,
                         clientCertificateRequired: false,
-                        enabledSslProtocols: SslProtocols.Tls12 | SslProtocols.Tls13,
+                        enabledSslProtocols: System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,
                         checkCertificateRevocation: true);
-                    
+
                     var buffer = new byte[4096];
                     var messageBuilder = new StringBuilder();
                     int bytesRead = await sslStream.ReadAsync(buffer, 0, buffer.Length, stoppingToken);
-                    
                     messageBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
                     string receivedData = messageBuilder.ToString();
+
                     int start = receivedData.IndexOf(START_OF_BLOCK);
                     int end = receivedData.IndexOf(END_OF_BLOCK);
 
                     if (start > -1 && end > start)
                     {
                         string hl7Message = receivedData.Substring(start + 1, end - start - 1).Trim();
-                        _logger.LogInformation("Mensagem HL7 recebida. A publicar na fila...");
+                        _logger.LogInformation("Mensagem HL7 recebida. Publicando na fila...");
 
                         var body = Encoding.UTF8.GetBytes(hl7Message);
-                        
-                        _rabbitChannel.BasicPublish(exchange: "",
-                                                   routingKey: HL7_PROCESSING_QUEUE,
-                                                   basicProperties: null,
-                                                   body: body);
+                        await _messagePublisher.PublishAsync(
+                            exchange: "",
+                            routingKey: HL7_PROCESSING_QUEUE,
+                            body: body
+                        );
+                        _logger.LogInformation("Mensagem publicada na fila '{QueueName}' usando IMessagePublisher.", HL7_PROCESSING_QUEUE);
 
-                        _logger.LogInformation("Mensagem publicada com sucesso na fila '{QueueName}'.", HL7_PROCESSING_QUEUE);
-                        
                         string ackMessage = _hl7Parser.CreateAck(hl7Message);
                         var responseMessage = $"{START_OF_BLOCK}{ackMessage}{END_OF_BLOCK}{CARRIAGE_RETURN}";
                         byte[] responseBytes = Encoding.UTF8.GetBytes(responseMessage);

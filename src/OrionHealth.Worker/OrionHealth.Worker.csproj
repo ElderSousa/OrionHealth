@@ -13,6 +13,7 @@
     <ProjectReference Include="..\OrionHealth.Application\OrionHealth.Application.csproj" />
     <ProjectReference Include="..\OrionHealth.Infrastructure\OrionHealth.Infrastructure.csproj" />
     <ProjectReference Include="..\OrionHealth.CrossCutting\OrionHealth.CrossCutting.csproj" />
+    <ProjectReference Include="..\OrionHealth.RabbitMQ\OrionHealth.RabbitMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>

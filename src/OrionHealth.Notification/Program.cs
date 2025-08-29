@@ -1,5 +1,6 @@
 
 using OrionHealth.Notification;
+using OrionHealth.RabbitMQ;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -11,7 +12,7 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 // --- FIM DA CORREÇÃO DEFINITIVA ---
-
+builder.Services.AddRabbitMQMessaging();
 builder.Services.AddDependencyInjection(builder.Configuration);
 builder.Services.AddHostedService<NotificationConsumer>();
 

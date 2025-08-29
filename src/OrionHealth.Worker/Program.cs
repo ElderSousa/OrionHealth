@@ -1,5 +1,6 @@
 using OrionHealth.CrossCutting;
 using OrionHealth.Infrastructure.Mllp;
+using OrionHealth.RabbitMQ;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Configuration
 
 builder.Services.AddAppServices(builder.Configuration);
 builder.Services.AddHostedService<MllpListenerService>();
+builder.Services.AddRabbitMQMessaging();
 
 var host = builder.Build();
 host.Run();

@@ -1,4 +1,5 @@
 using OrionHealth.Hl7Processor;
+using OrionHealth.RabbitMQ;;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Configuration
 // --- FIM DA CORREÇÃO DEFINITIVA ---
 
 builder.Services.AddDependencyInjection(builder.Configuration);
+builder.Services.AddRabbitMQMessaging();
 builder.Services.AddHostedService<Hl7MessageConsumer>();
 
 var host = builder.Build();

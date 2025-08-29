@@ -30,11 +30,11 @@
             "console": "internalConsole"
         },
         {
-            "name": "Run Notification",
+            "name": "Run Notifier",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-notification",
-            "program": "${workspaceFolder}/src/OrionHealth.Notification/bin/Debug/net8.0/OrionHealth.Notification.dll",
+            "preLaunchTask": "build-notifier",
+            "program": "${workspaceFolder}/src/OrionHealth.Notifier/bin/Debug/net8.0/OrionHealth.Notifier.dll",
             "args": [
                 "--environment",
                 "Development"
@@ -61,8 +61,15 @@
             "configurations": [
                 "Run Gateway (Worker)",
                 "Run Hl7Processor",
-                "Run Notification",
+                "Run Notifier",
                 "Run TestClient"
+            ]
+        },
+        {
+            "name": "Run Gateway + TestClient",
+            "configurations": [
+                "Run Gateway (Worker)",
+                "Run TestClient" 
             ]
         }
     ]

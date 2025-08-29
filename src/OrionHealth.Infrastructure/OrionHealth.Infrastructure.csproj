@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrionHealth.Application\OrionHealth.Application.csproj" />
+    <ProjectReference Include="..\OrionHealth.RabbitMQ\OrionHealth.RabbitMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>

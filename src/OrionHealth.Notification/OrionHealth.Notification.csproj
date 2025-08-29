@@ -22,4 +22,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OrionHealth.RabbitMQ\OrionHealth.RabbitMQ.csproj" />
+  </ItemGroup>
+
 </Project>

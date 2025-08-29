@@ -75,8 +75,9 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - MessageBroker__HostName=rabbitmq
+      - MessageBroker__UserName=guest
+      - MessageBroker__Password=guest
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s

@@ -1,73 +1,97 @@
 using System.Text;
 using OrionHealth.Application.UseCases.ReceiveOruR01.Interfaces;
+using OrionHealth.RabbitMQ;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-
-namespace OrionHealth.Hl7Processor;
 
 public class Hl7MessageConsumer : BackgroundService
 {
     private readonly ILogger<Hl7MessageConsumer> _logger;
-    private readonly IModel _channel;
-    private readonly IReceiveOruR01UseCase _receiveOruR01UseCase;
+    private readonly RabbitMQConnectionService _rabbitService;
+    private readonly IReceiveOruR01UseCase _hl7ProcessingUseCase;
+    private readonly IMessagePublisher _messagePublisher;
+
     private const string QueueName = "hl7_processamento";
+    private const string OrionQueueName = "hl7_to_orion";
 
-
-    public Hl7MessageConsumer(ILogger<Hl7MessageConsumer> logger, IModel channel, IReceiveOruR01UseCase receiveOruR01UseCase)
+    public Hl7MessageConsumer(
+        ILogger<Hl7MessageConsumer> logger,
+        RabbitMQConnectionService rabbitService,
+        IReceiveOruR01UseCase hl7ProcessingUseCase,
+        IMessagePublisher messagePublisher)
     {
         _logger = logger;
-        _channel = channel;
-        _receiveOruR01UseCase = receiveOruR01UseCase;
-
-         // Garantir que a fila exista
-        _channel.QueueDeclare(
-            queue: QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null
-        );
+        _rabbitService = rabbitService;
+        _hl7ProcessingUseCase = hl7ProcessingUseCase;
+        _messagePublisher = messagePublisher;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
 
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += async (model, ea) =>
+        while (!stoppingToken.IsCancellationRequested)
         {
-            var body = ea.Body.ToArray();
-            var hl7Message = Encoding.UTF8.GetString(body);
-            _logger.LogInformation("Mensagem recebida da fila: {Hl7Message}", hl7Message);
-
             try
             {
-                var result = await _receiveOruR01UseCase.ExecuteAsync(hl7Message);
-                if (!result.IsSuccess)
-                {
-                    _logger.LogWarning("Processamento falhou. NACK enviado. Motivo: {AckNackMessage}", result.AckNackMessage);
-                    _channel.BasicNack(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
-                }
+                var channel = await _rabbitService.GetChannelAsync();
 
-                _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-                _logger.LogInformation("Mensagem processada com sucesso e ACK enviado.");
-               
+                channel.QueueDeclare(
+                    queue: QueueName,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null
+                );
+
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += async (model, ea) =>
+                {
+                    var body = ea.Body.ToArray();
+                    var hl7Message = Encoding.UTF8.GetString(body);
+                    _logger.LogInformation("Mensagem recebida: {Hl7Message}", hl7Message);
+
+                    try
+                    {
+                        var result = await _hl7ProcessingUseCase.ExecuteAsync(hl7Message);
+
+                        if (!result.IsSuccess)
+                        {
+                            _logger.LogWarning("Falha no processamento: {AckNackMessage}", result.AckNackMessage);
+                            channel.BasicNack(ea.DeliveryTag, false, false);
+                            return;
+                        }
+
+                        channel.BasicAck(ea.DeliveryTag, false);
+                        _logger.LogInformation("Mensagem processada com sucesso.");
+
+                        // Publica para o microserviço OrionHealth salvar no banco
+                        var orionBody = Encoding.UTF8.GetBytes(hl7Message);
+                        await _messagePublisher.PublishAsync(
+                            exchange: "",
+                            routingKey: OrionQueueName,
+                            body: orionBody
+                        );
+                        _logger.LogInformation("Mensagem publicada na fila '{QueueName}' para OrionHealth.", OrionQueueName);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Erro ao processar HL7. Mensagem rejeitada.");
+                        channel.BasicNack(ea.DeliveryTag, false, false);
+                    }
+                };
+
+                channel.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
+                _logger.LogInformation("Consumidor iniciado. Aguardando mensagens na fila '{QueueName}'.", QueueName);
+
+                while (channel.IsOpen && !stoppingToken.IsCancellationRequested)
+                    await Task.Delay(1000, stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar a mensagem HL7. A mensagem será rejeitada.");
-                // Rejeitamos a mensagem, o que a pode enviar para uma "dead-letter queue" se configurada
-                _channel.BasicNack(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
+                _logger.LogError(ex, "Erro no consumidor. Tentando reconectar em 5 segundos...");
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
-        };
-
-        // Começamos a "ouvir" a fila
-        _channel.BasicConsume(queue: QueueName,
-                             autoAck: false, // Importante: confirmamos manualmente
-                             consumer: consumer);
-
-        _logger.LogInformation("Consumidor iniciado. A aguardar mensagens na fila '{QueueName}'.", QueueName);
-        // Mantém o background service vivo enquanto não for cancelado
-        return Task.Delay(Timeout.Infinite, stoppingToken);
+        }
     }
 }

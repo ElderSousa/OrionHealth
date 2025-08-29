@@ -26,12 +26,12 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-notification",
+            "label": "build-notifier",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/OrionHealth.Notification/OrionHealth.Notification.csproj",
+                "${workspaceFolder}/src/OrionHealth.Notifier/OrionHealth.Notifier.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

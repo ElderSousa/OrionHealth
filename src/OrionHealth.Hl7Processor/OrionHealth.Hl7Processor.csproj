@@ -8,8 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrionHealth.Application\OrionHealth.Application.csproj" />
+    <PackageReference Include="Polly" Version="8.6.3" />
     <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrionHealth.Application\OrionHealth.Application.csproj" />
+    <ProjectReference Include="..\OrionHealth.Infrastructure\OrionHealth.Infrastructure.csproj" />
+    <ProjectReference Include="..\OrionHealth.RabbitMQ\OrionHealth.RabbitMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,10 +29,6 @@
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OrionHealth.Infrastructure\OrionHealth.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
